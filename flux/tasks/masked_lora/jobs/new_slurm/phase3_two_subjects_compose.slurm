@@ -75,7 +75,13 @@ SLIDER_TO_MASK=(0 0 1 1)
 # Scale (smile_man, age_man, smile_woman, age_woman)
 SLIDER_SCALES=(1.5 1.5 -1.5 -1.5)
 
-EDIT_START_STEP=0
+EDIT_START_STEP=8   # ~equivalente a "starting noise 700" del paper SDXL: i
+                    # primi 8 step su 30 girano vanilla single-forward (no LoRA,
+                    # no blend) per stabilizzare il layout della scena dalla
+                    # base. Poi parte il multi-path edit. Senza questo, il
+                    # blend di velocity globalmente divergenti dal step 0
+                    # spinge la composizione fuori dalla scena base
+                    # (osservato: posizioni/identita' dei soggetti cambiano).
 
 echo "================================================="
 echo "=== masked_lora Flux: Phase 3 multi-compose   ==="
