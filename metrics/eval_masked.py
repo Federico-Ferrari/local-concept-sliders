@@ -143,9 +143,11 @@ def compute_metrics(
     mask_area  = float(mask_np.mean())
     imask_area = 1.0 - mask_area
 
-    lpips_in  = float(lpips_model(_to_lp(base_np, mask_np),  _to_lp(edit_np, mask_np)).item()) / (mask_area  + 1e-8)
-    lpips_out = float(lpips_model(_to_lp(base_np, imask_np), _to_lp(edit_np, imask_np)).item()) / (imask_area + 1e-8)
-    lpips_loc = lpips_in / (lpips_out + 1e-8)
+    lpips_in_raw  = float(lpips_model(_to_lp(base_np, mask_np),  _to_lp(edit_np, mask_np)).item())
+    lpips_out_raw = float(lpips_model(_to_lp(base_np, imask_np), _to_lp(edit_np, imask_np)).item())
+    lpips_in_norm  = lpips_in_raw  / (mask_area  + 1e-8)
+    lpips_out_norm = lpips_out_raw / (imask_area + 1e-8)
+    lpips_loc = lpips_in_norm / (lpips_out_norm + 1e-8)
 
     # ---- CLIP localization -------------------------------------------
     edit_prompt = CONCEPT_EDIT_PROMPT[concept]
@@ -165,14 +167,16 @@ def compute_metrics(
     clip_loc  = delta_in / (delta_in + abs(delta_out) + 1e-8)
 
     return {
-        "run_id":            run_dir.name,
-        "scale":             scale,
-        "lpips_inside":      lpips_in,
-        "lpips_outside":     lpips_out,
+        "run_id":             run_dir.name,
+        "scale":              scale,
+        "lpips_inside":       lpips_in_raw,
+        "lpips_outside":      lpips_out_raw,
+        "lpips_inside_norm":  lpips_in_norm,
+        "lpips_outside_norm": lpips_out_norm,
         "lpips_localization": lpips_loc,
-        "clip_delta_in":     delta_in,
-        "clip_delta_out":    delta_out,
-        "clip_localization": clip_loc,
+        "clip_delta_in":      delta_in,
+        "clip_delta_out":     delta_out,
+        "clip_localization":  clip_loc,
     }
 
 
@@ -181,7 +185,8 @@ def compute_metrics(
 # ---------------------------------------------------------------------------
 
 METRIC_KEYS = [
-    "lpips_inside", "lpips_outside", "lpips_localization",
+    "lpips_inside", "lpips_outside",
+    "lpips_inside_norm", "lpips_outside_norm", "lpips_localization",
     "clip_localization",
 ]
 
@@ -237,8 +242,8 @@ def main() -> None:
 
             all_rows.append(row)
             print(f"  [ok]   {run_dir.name}  s{idx}  "
-                  f"lpips_in={row['lpips_inside']:.4f}  "
-                  f"lpips_out={row['lpips_outside']:.4f}  "
+                  f"lpips_in={row['lpips_inside']:.4f}  lpips_in_norm={row['lpips_inside_norm']:.4f}  "
+                  f"lpips_out={row['lpips_outside']:.4f}  lpips_out_norm={row['lpips_outside_norm']:.4f}  "
                   f"clip_loc={row['clip_localization']:.4f}")
 
     if not all_rows:
