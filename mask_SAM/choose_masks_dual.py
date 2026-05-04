@@ -60,6 +60,16 @@ def get_mask(predictor, point_xy: tuple) -> np.ndarray:
     return masks[int(np.argmax(scores))]
 
 
+def open_image(path: Path) -> None:
+    import os, subprocess, sys
+    if sys.platform == "darwin":
+        subprocess.Popen(["open", str(path)])
+    elif sys.platform == "win32":
+        os.startfile(str(path))
+    else:
+        subprocess.Popen(["xdg-open", str(path)])
+
+
 def show_comparison(
     image_np: np.ndarray,
     mask1: np.ndarray,
@@ -67,8 +77,6 @@ def show_comparison(
     run_dir: Path,
     prefix: str,
 ) -> None:
-    import subprocess
-
     def overlay(img, mask):
         out = img.copy().astype(float)
         out[mask == 0] *= 0.35
@@ -78,7 +86,8 @@ def show_comparison(
     p2 = run_dir / f"_{prefix}_v2_preview.png"
     Image.fromarray(overlay(image_np, mask1)).save(p1)
     Image.fromarray(overlay(image_np, mask2)).save(p2)
-    subprocess.Popen(["open", str(p1), str(p2)])
+    open_image(p1)
+    open_image(p2)
 
 
 def do_two_clicks(predictor, image_np: np.ndarray, run_id: str, label: str):
