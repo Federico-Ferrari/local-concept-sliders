@@ -104,7 +104,7 @@ pip install --index-url https://download.pytorch.org/whl/cu124 \
 echo ""
 echo "[3/5] Installo diffusers / transformers / peft / accelerate..."
 pip install \
-    "diffusers>=0.31.0" \
+    "diffusers>=0.31.0,<0.33.0" \
     "transformers>=4.44.0" \
     "accelerate>=0.34.0" \
     "peft>=0.13.0" \
