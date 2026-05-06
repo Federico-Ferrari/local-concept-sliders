@@ -19,10 +19,11 @@
 # Setup identico a quello shop_concept:
 #   * 2 soggetti (man, woman) con 2 slider distinti per ognuno
 #   * smile e age caricati 2 volte come adapter PEFT distinti (4 totali)
-#   * 3 run con scale (smile_man, age_man, smile_woman, age_woman):
-#       0,0,0,0       (baseline)
-#       1,1,-1,-1     (man +smile +age, woman -smile -age)
-#       2,2,-2,-2     (estremi)
+#   * 4 run con scale (smile_man, age_man, smile_woman, age_woman):
+#       0,0,0,0           (baseline)
+#       0.5,0.5,-0.5,-0.5
+#       1,1,-1,-1
+#       1.5,1.5,-1.5,-1.5
 #
 # Setup masked_lora:
 #   * Maschere SAM (mask_man.png, mask_woman.png)
@@ -135,9 +136,10 @@ run_one() {
         --output_name     "$OUT_NAME"
 }
 
-run_one "01_all_zero"           0    0    0    0
-run_one "02_pos_man_neg_woman"  1    1   -1   -1
-run_one "03_extreme"            2    2   -2   -2
+run_one "01_all_zero"     0      0      0      0
+run_one "02_scale0.5"   0.5    0.5   -0.5   -0.5
+run_one "03_scale1.0"   1      1     -1     -1
+run_one "04_scale1.5"   1.5    1.5   -1.5   -1.5
 
 echo ""
 echo "================================================================"
