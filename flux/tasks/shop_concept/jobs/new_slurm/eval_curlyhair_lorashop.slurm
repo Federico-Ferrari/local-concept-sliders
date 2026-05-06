@@ -11,8 +11,9 @@
 
 # LoRAShop eval — curlyhair_man — 20 immagini con multitoken attention.
 # Prompts: flux/tasks/shop_concept/eval/prompts.yaml  (seed 200-219)
+# Slider:  federico_v2 / flux-curly_hair_flux_v2_custom
+# Scale:   5, 6, 8  → edited_lorashop_s5.0.png, s6.0.png, s8.0.png
 # Output:  flux/tasks/shop_concept/runs/eval_curlyhair_man_{0200..0219}/
-#            base.png + mask_target.png + edited_lorashop_s{1,2,3}.0.png
 # Metriche: metrics/results_flux_lorashop/curlyhair_man/
 
 set -euo pipefail
@@ -27,14 +28,13 @@ export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
-SLIDERS_ROOT="${SLIDERS_ROOT:-$FERT_REPO/flux/trained_sliders/sliders/trial_v1}"
-SLIDER="${SLIDERS_ROOT}/curlyhair_man_flux_v1/flux-curlyhair_man_flux_v1/slider_0.pt"
+SLIDER="$FERT_REPO/flux/trained_sliders/sliders/federico_v2/flux-curly_hair_flux_v2_custom/slider_0.pt"
 RUNS_ROOT="$FERT_REPO/flux/tasks/shop_concept/runs"
 
 mkdir -p "$RUNS_ROOT" flux/tasks/shop_concept/logs
 
 echo "================================================================"
-echo "=== LORASHOP EVAL — curlyhair_man — 20 immagini            ==="
+echo "=== LORASHOP EVAL — curlyhair_man — scale 5,6,8            ==="
 echo "  SLIDER    = ${SLIDER}"
 echo "  RUNS_ROOT = ${RUNS_ROOT}"
 echo "================================================================"
@@ -51,6 +51,7 @@ python flux/tasks/shop_concept/eval/01_generate_eval_runs.py \
     --concept     curlyhair_man \
     --slider_path "${SLIDER}" \
     --runs_root   "${RUNS_ROOT}" \
+    --eval_scales 5 6 8 \
     --mode        all \
     --device      cuda
 echo ""
@@ -64,6 +65,6 @@ python metrics/eval_lorashop.py \
 echo ""
 echo "================================================================"
 echo "=== COMPLETATO ==="
-echo "  Immagini : ${RUNS_ROOT}/eval_curlyhair_man_*/    "
+echo "  Immagini : ${RUNS_ROOT}/eval_curlyhair_man_*/"
 echo "  Metriche : metrics/results_flux_lorashop/curlyhair_man/"
 echo "================================================================"
