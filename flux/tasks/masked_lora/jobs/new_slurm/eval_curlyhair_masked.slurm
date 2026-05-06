@@ -21,8 +21,6 @@ activate_flux_env
 
 export HF_HOME="$FERT_HF_CACHE"
 export HF_HUB_CACHE="$FERT_HF_CACHE/hub"
-export HF_HUB_OFFLINE=1
-export TRANSFORMERS_OFFLINE=1
 
 mkdir -p flux/tasks/masked_lora/logs
 
