@@ -74,16 +74,17 @@ run_concept() {
     echo ""
 }
 
-run_concept "age_person"   "${S_ROOT}/flux-age_flux_v2_custom/slider_0.pt"          "age"        "0.5 1.0 1.5"
-run_concept "curlyhair"    "${S_ROOT}/flux-curly_hair_flux_v2_custom/slider_0.pt"   "curly"      "0.5 1.0 1.5"
-run_concept "furlength"    "${S_ROOT}/flux-fur_flux_v2_custom/slider_0.pt"          "furlength"  "0.5 1.0 1.5"
-run_concept "painterly"    "${S_ROOT}/flux-pittoric_style_flux_v2_custom/slider_0.pt" "painterly" "0.5 1.0 1.5"
-run_concept "smile_person" "${S_ROOT}/flux-smile_flux_v2_custom/slider_0.pt"        "smile"      "0.5 1.0 1.5"
+run_concept "age_person"   "${S_ROOT}/flux-age_flux_v2_custom/slider_0.pt"            "age"        "0.5 1.0 1.5"
+run_concept "curlyhair"    "${S_ROOT}/flux-curly_hair_flux_v2_custom/slider_0.pt"     "curly"      "0.5 1.0 1.5"
+run_concept "furlength"    "${S_ROOT}/flux-fur_flux_v2_custom/slider_0.pt"            "furlength"  "0.5 1.0 1.5"
+run_concept "painterly"    "${S_ROOT}/flux-pittoric_style_flux_v2_custom/slider_0.pt" "painterly"  "2 3 4"
+run_concept "smile_person" "${S_ROOT}/flux-smile_flux_v2_custom/slider_0.pt"          "smile"      "0.5 1.0 1.5"
+run_concept "daynight"     "${S_ROOT}/flux-night_sky_flux_v2_custom/slider_0.pt"      "daynight"   "3 4 5"
 
 echo "================================================================"
 echo "=== PHASE 3 federico_v2 COMPLETATA                         ==="
 echo "Per le metriche:"
-for C in age_person curlyhair furlength painterly smile_person; do
+for C in age_person curlyhair furlength painterly smile_person daynight; do
     echo "  python metrics/eval_masked.py --concept $C --runs_root ${RUNS_ROOT}"
 done
 echo "================================================================"

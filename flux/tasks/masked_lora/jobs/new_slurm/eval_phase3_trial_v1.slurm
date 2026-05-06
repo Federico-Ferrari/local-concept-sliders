@@ -81,11 +81,12 @@ run_concept "curlyhair"    "${S_ROOT}/curlyhair_person_flux_v1/flux-curlyhair_pe
 run_concept "furlength"    "${S_ROOT}/furlength_dog_flux_v1/flux-furlength_dog_flux_v1/slider_0.pt"   "furlength"  "0.5 1.0 1.5"
 run_concept "painterly"    "${S_ROOT}/painterly_flux_v1/flux-painterly_flux_v1/slider_0.pt"           "painterly"  "0.5 1.0 1.5"
 run_concept "smile_person" "${S_ROOT}/smile_person_flux_v1/flux-smile_person_flux_v1/slider_0.pt"     "smile"      "0.5 1.0 1.5"
+run_concept "daynight"     "${S_ROOT}/daynight_flux_v1/flux-daynight_flux_v1/slider_0.pt"             "daynight"   "3 4 5"
 
 echo "================================================================"
 echo "=== PHASE 3 trial_v1 COMPLETATA                             ==="
 echo "Per le metriche:"
-for C in age_person curlyhair furlength painterly smile_person; do
+for C in age_person curlyhair furlength painterly smile_person daynight; do
     echo "  python metrics/eval_masked.py --concept $C --runs_root ${RUNS_ROOT}"
 done
 echo "================================================================"
