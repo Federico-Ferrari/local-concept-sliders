@@ -3,6 +3,7 @@
 #SBATCH --account=3352759
 #SBATCH --partition=gpunew
 #SBATCH --qos=normal
+#SBATCH --nodes=1
 #SBATCH --nodelist=gnode02,gnode04
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=4
