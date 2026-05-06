@@ -12,7 +12,7 @@
 # LoRAShop eval — curlyhair_man — 20 immagini con multitoken attention.
 # Prompts: flux/tasks/shop_concept/eval/prompts.yaml  (seed 200-219)
 # Slider:  federico_v2 / flux-curly_hair_flux_v2_custom
-# Scale:   5, 6, 8  → edited_lorashop_s5.0.png, s6.0.png, s8.0.png
+# Scale:   2, 3.5, 5  → edited_lorashop_s2.0.png, s3.5.png, s5.0.png
 # Output:  flux/tasks/shop_concept/runs/eval_curlyhair_man_{0200..0219}/
 # Metriche: metrics/results_flux_lorashop/curlyhair_man/
 
@@ -51,7 +51,7 @@ python flux/tasks/shop_concept/eval/01_generate_eval_runs.py \
     --concept     curlyhair_man \
     --slider_path "${SLIDER}" \
     --runs_root   "${RUNS_ROOT}" \
-    --eval_scales 5 6 8 \
+    --eval_scales 2 3.5 5 \
     --mode        all \
     --device      cuda
 echo ""
