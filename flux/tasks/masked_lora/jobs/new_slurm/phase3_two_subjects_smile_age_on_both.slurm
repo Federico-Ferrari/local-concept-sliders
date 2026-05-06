@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mlf_p3_smile_age_on_both
+#SBATCH --account=3377169
 #SBATCH --partition=stud
 #SBATCH --qos=stud
 #SBATCH --gpus=1
@@ -83,11 +84,11 @@ mkdir -p flux/tasks/masked_lora/logs flux/tasks/masked_lora/_peft_cache
 #     Dopo aver lanciato phase1, controlla:
 #       ls flux/tasks/masked_lora/outputs/ | grep two_subjects_masked
 #     e copia qui sotto il nome esatto della cartella.
-RUN_ID="two_subjects_masked_20260424_1910"   # <-- CAMBIA QUESTO
+RUN_ID="two_subjects_masked_20260424_1910"
 RUN_DIR="flux/tasks/masked_lora/outputs/${RUN_ID}"
 
-SLIDER_SMILE="flux/trained_sliders/sliders/smile_flux_v5_symmetric_rank16_xattn_alpha1/flux-smile_flux_v5_symmetric/slider_0.pt"
-SLIDER_AGE="flux/trained_sliders/sliders/age_flux_v1_symmetric_rank16_xattn_alpha1/flux-age_flux_v1_symmetric/slider_0.pt"
+SLIDER_SMILE="flux/trained_sliders/sliders/trial_v1/smile_person_flux_v1/flux-smile_person_flux_v1/slider_0.pt"
+SLIDER_AGE="flux/trained_sliders/sliders/trial_v1/age_person_flux_v1/flux-age_person_flux_v1/slider_0.pt"
 
 # 2 maschere SAM disgiunte
 MASK_NAMES=(mask_man.png mask_woman.png)
