@@ -51,6 +51,15 @@ STEPS=30
 GUIDANCE=3.5
 TS=$(date +%Y%m%d_%H%M)
 
+PROMPT_2P="two people facing the camera, photorealistic portrait, 4k"
+PROMPT_3P="three people facing the camera, photorealistic portrait, 4k"
+PROMPT_2P_NEUTRAL="two people facing the camera, neutral expression, photorealistic portrait, 4k"
+PROMPT_3P_NEUTRAL="three people facing the camera, neutral expression, photorealistic portrait, 4k"
+PROMPT_CITY="a city street with buildings, photorealistic, 4k"
+PROMPT_NATURE="a panoramic landscape with mountains and valleys, photorealistic, 4k"
+PROMPT_PETS="two pets in a garden, photorealistic, 4k"
+PROMPT_SKY="a panoramic landscape at dusk, photorealistic, 4k"
+
 echo "=================================================================="
 echo "=== eval_global_federico_v2 : 6 slider × 8 scale × 2 prompt  ==="
 echo "=================================================================="
@@ -63,8 +72,7 @@ mkdir -p "$SAVE"
 echo "[1/6] AGE  →  $SAVE"
 python flux/tasks/baseline/scripts/generate_flux_slider.py \
     --lora_dirs "$AGE_DIR" --lora_scales $SCALES \
-    --prompt "a man and a woman sitting at a café table, serious expression, portrait photo" \
-    --prompt "two men and a woman in a park, neutral expression, outdoor portrait" \
+    --prompt "$PROMPT_2P" --prompt "$PROMPT_3P" \
     --seeds $SEED --save_dir "$SAVE" \
     --height $HEIGHT --width $WIDTH --steps $STEPS --guidance_scale $GUIDANCE \
     --rank 16 --alpha 1 --train_method noxattn --skip_slider_timestep_till 8
@@ -76,8 +84,7 @@ echo ""
 echo "[2/6] CURLY HAIR  →  $SAVE"
 python flux/tasks/baseline/scripts/generate_flux_slider.py \
     --lora_dirs "$CURLY_DIR" --lora_scales $SCALES \
-    --prompt "a man and a woman sitting at a café table, serious expression, portrait photo" \
-    --prompt "two men and a woman in a park, neutral expression, outdoor portrait" \
+    --prompt "$PROMPT_2P" --prompt "$PROMPT_3P" \
     --seeds $SEED --save_dir "$SAVE" \
     --height $HEIGHT --width $WIDTH --steps $STEPS --guidance_scale $GUIDANCE \
     --rank 16 --alpha 1 --train_method noxattn --skip_slider_timestep_till 8
@@ -89,8 +96,7 @@ echo ""
 echo "[3/6] FUR LENGTH  →  $SAVE"
 python flux/tasks/baseline/scripts/generate_flux_slider.py \
     --lora_dirs "$FUR_DIR" --lora_scales $SCALES \
-    --prompt "a golden retriever and a tabby cat in a garden, outdoor photo" \
-    --prompt "a labrador and a cat on a sofa, pet portrait" \
+    --prompt "$PROMPT_PETS" --prompt "$PROMPT_NATURE" \
     --seeds $SEED --save_dir "$SAVE" \
     --height $HEIGHT --width $WIDTH --steps $STEPS --guidance_scale $GUIDANCE \
     --rank 16 --alpha 1 --train_method noxattn --skip_slider_timestep_till 8
@@ -102,8 +108,7 @@ echo ""
 echo "[4/6] NIGHT SKY  →  $SAVE"
 python flux/tasks/baseline/scripts/generate_flux_slider.py \
     --lora_dirs "$NIGHT_DIR" --lora_scales $SCALES \
-    --prompt "a city skyline at dusk, photorealistic, 4k" \
-    --prompt "a panoramic landscape with mountains, photorealistic, 4k" \
+    --prompt "$PROMPT_CITY" --prompt "$PROMPT_SKY" \
     --seeds $SEED --save_dir "$SAVE" \
     --height $HEIGHT --width $WIDTH --steps $STEPS --guidance_scale $GUIDANCE \
     --rank 16 --alpha 1 --train_method noxattn --skip_slider_timestep_till 8
@@ -115,8 +120,7 @@ echo ""
 echo "[5/6] PAINTERLY  →  $SAVE"
 python flux/tasks/baseline/scripts/generate_flux_slider.py \
     --lora_dirs "$PAINT_DIR" --lora_scales $SCALES \
-    --prompt "a city street with buildings, photorealistic, 4k" \
-    --prompt "a panoramic landscape with mountains and valleys, photorealistic, 4k" \
+    --prompt "$PROMPT_CITY" --prompt "$PROMPT_NATURE" \
     --seeds $SEED --save_dir "$SAVE" \
     --height $HEIGHT --width $WIDTH --steps $STEPS --guidance_scale $GUIDANCE \
     --rank 16 --alpha 1 --train_method noxattn --skip_slider_timestep_till 8
@@ -128,8 +132,7 @@ echo ""
 echo "[6/6] SMILE  →  $SAVE"
 python flux/tasks/baseline/scripts/generate_flux_slider.py \
     --lora_dirs "$SMILE_DIR" --lora_scales $SCALES \
-    --prompt "a man and a woman sitting at a café table, serious expression, portrait photo" \
-    --prompt "two men and a woman in a park, neutral expression, outdoor portrait" \
+    --prompt "$PROMPT_2P_NEUTRAL" --prompt "$PROMPT_3P_NEUTRAL" \
     --seeds $SEED --save_dir "$SAVE" \
     --height $HEIGHT --width $WIDTH --steps $STEPS --guidance_scale $GUIDANCE \
     --rank 16 --alpha 1 --train_method noxattn --skip_slider_timestep_till 8
