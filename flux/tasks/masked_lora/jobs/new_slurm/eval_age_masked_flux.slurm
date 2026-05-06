@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=eval_age_masked_flux
-#SBATCH --account=3377169
+#SBATCH --account=3352759
 #SBATCH --partition=gpunew
 #SBATCH --qos=normal
 #SBATCH --gpus=1
