@@ -57,7 +57,7 @@ PAINTERLY_DIR="${SLIDERS_ROOT}/pittoric_style_flux_v2_custom_rank16_noxattn_alph
 # Parametri comuni
 # -----------------------------------------------------------------------------
 SCALES="0 0.5 1 1.5 2 3 4 5"
-SEED=42
+SEED=777
 HEIGHT=1024
 WIDTH=1024
 STEPS=30
@@ -70,7 +70,7 @@ TS=$(date +%Y%m%d_%H%M)
 PROMPT_2P="two people facing the camera, photorealistic portrait, 4k"
 PROMPT_3P="three people facing the camera, photorealistic portrait, 4k"
 PROMPT_CITY="a city street with buildings, photorealistic, 4k"
-PROMPT_NATURE="a forest with mountains and a river, photorealistic, 4k"
+PROMPT_NATURE="a panoramic landscape with mountains and valleys, photorealistic, 4k"
 
 echo "=================================================================="
 echo "=== eval_global_4sliders : 4 invocations separate              ==="
