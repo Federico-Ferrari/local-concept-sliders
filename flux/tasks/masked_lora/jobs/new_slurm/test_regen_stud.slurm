@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=test_regen
+#SBATCH --account=3377169
 #SBATCH --partition=stud
 #SBATCH --qos=stud
 #SBATCH --gpus=1
