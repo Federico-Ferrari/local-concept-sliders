@@ -12,7 +12,7 @@
 # =============================================================================
 # eval_smile_phase1.slurm  (selectivity task)
 # =============================================================================
-# FASE 1 — Genera 20 immagini base per il set di selettività "smile".
+# Phase 1 — generate 20 base images for the "smile" selectivity set.
 #
 # Ogni immagine contiene UNA DONNA e UN UOMO (almeno):
 #   - TARGET:     la donna  (smile_woman slider deve farla sorridere)
@@ -40,7 +40,7 @@ NEG="painting, illustration, cartoon, blurry, low quality, watermark, text, sign
 mkdir -p "$OUTPUT_ROOT" sdxl/tasks/selectivity/logs
 
 echo "================================================================"
-echo "=== FASE 1: selectivity/smile  (20 immagini base)           ==="
+echo "=== PHASE 1: selectivity/smile  (20 base images)           ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -101,7 +101,7 @@ for i in "${!SEEDS[@]}"; do
 done
 
 echo "================================================================"
-echo "=== FASE 1 COMPLETATA: selectivity/smile                    ==="
+echo "=== PHASE 1 COMPLETED: selectivity/smile                    ==="
 echo "================================================================"
 ls -lh "${OUTPUT_ROOT}/eval_smile_01/"
 echo "Totale run dir: $(ls -d ${OUTPUT_ROOT}/eval_smile_* | wc -l)"

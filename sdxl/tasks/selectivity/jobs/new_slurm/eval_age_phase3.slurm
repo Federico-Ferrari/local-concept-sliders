@@ -12,11 +12,11 @@
 # =============================================================================
 # eval_age_phase3.slurm  (selectivity task)
 # =============================================================================
-# FASE 3 — Applica GLOBALMENTE (senza maschera spaziale) due slider age:
+# Phase 3 — apply two age sliders GLOBALLY (no spatial mask):
 #   - SPECIFICO: age_woman   → deve modificare solo la donna
-#   - GENERALE:  age_person  → baseline, modifica tutti
+#   - GENERAL:  age_person → baseline, modifies every subject
 #
-# La selettività si misura dopo con eval_selectivity.py usando
+# Selectivity is computed afterwards by eval_selectivity.py using
 # mask_target.png (donna) e mask_nontarget.png (uomo) create in fase 2.
 #
 # ⚠️  IMPOSTA I PATH DEI TUOI SLIDER QUI:
@@ -37,13 +37,13 @@ SLIDERS_ROOT="sdxl/trained_sliders/sliders"
 # ⚠️  IMPOSTA IL PATH DEL TUO SLIDER SPECIFICO QUI (age_woman):
 SLIDER_SPECIFIC="${SLIDERS_ROOT}/age_woman_sdxl_v1_alpha1.0_rank4_noxattn/age_woman_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
-# Slider generale (age_person — già usato in masked_lora):
+# General slider (age_person — also used in masked_lora):
 SLIDER_GENERAL="${SLIDERS_ROOT}/age_person_sdxl_v1_alpha1.0_rank4_noxattn/age_person_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
 RUNS_ROOT="sdxl/tasks/selectivity/runs"
 
 echo "================================================================"
-echo "=== FASE 3: selectivity/age  (20 runs × 2 slider × 3 scale) ==="
+echo "=== PHASE 3: selectivity/age  (20 runs x 2 sliders x 3 scales) ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -92,11 +92,11 @@ for i in $(seq 1 20); do
 done
 
 echo "================================================================"
-echo "=== FASE 3 COMPLETATA: selectivity/age                      ==="
+echo "=== PHASE 3 COMPLETED: selectivity/age                      ==="
 echo "================================================================"
 echo "Per ogni run trovi:"
 echo "  edited_age_specific_s0.5.png / s1.0.png / s1.5.png"
 echo "  edited_age_general_s0.5.png  / s1.0.png / s1.5.png"
 echo ""
-echo "Esegui poi (dopo fase 2 maschere):"
+echo "Then run (after phase 2 masks):"
 echo "  python metrics/eval_selectivity.py --concept age --device cuda"

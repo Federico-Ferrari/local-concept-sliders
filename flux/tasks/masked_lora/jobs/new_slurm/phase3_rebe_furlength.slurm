@@ -13,7 +13,7 @@
 # =============================================================================
 # phase3_rebe_furlength.slurm
 # =============================================================================
-# Phase 3 masked LoRA — furlength × 20 run — per Rebe.
+# Phase 3 masked LoRA — furlength × 20 run .
 # Prerequisiti in RUNS_ROOT:
 #   eval_furlength_{01..20}/base.png + mask_target.png + metadata.json
 #
@@ -43,7 +43,7 @@ T_ROOT="$FERT_REPO/flux/trained_sliders/sliders/trial_v1"
 mkdir -p flux/tasks/masked_lora/logs "$CACHE_DIR"
 
 echo "================================================================"
-echo "=== PHASE 3 — furlength × 20 run — Rebe                  ==="
+echo "=== PHASE 3 — furlength × 20 run                  ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -86,6 +86,6 @@ run_concept "furlength" \
     "furlength_t" "1 2 3"
 
 echo "================================================================"
-echo "=== PHASE 3 furlength COMPLETATA                          ==="
+echo "=== PHASE 3 furlength COMPLETED                          ==="
 echo "  furlength_t (trial_v1) : s1, s2, s3"
 echo "================================================================"

@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 """
-eval_selectivity.py — valuta la selettività di slider subject-specific vs general.
+Selectivity metrics: compare a subject-specific slider against its general
+counterpart on the same multi-subject scenes (paper §4.1, §5.1).
 
-Per ogni concept (age, curlyhair, furlength, smile) e per ogni immagine base:
-  - Lo slider è applicato GLOBALMENTE (niente maschera spaziale in generazione)
-  - Misuriamo separatamente cosa succede nella regione TARGET e NON-TARGET
-  - Confrontiamo slider SPECIFICO (e.g. age_woman) vs GENERALE (e.g. age_person)
+For each concept (age, curlyhair, furlength, smile) and each base image:
+  - the slider is applied GLOBALLY (no spatial mask at generation time);
+  - we measure what happens separately inside the target region and inside
+    the non-target region (SAM masks produced beforehand);
+  - we compare the SPECIFIC slider (e.g. age_woman) against the GENERAL
+    one (e.g. age_person).
 
-Metriche per run × scale × slider_type:
-  - lpips_target_raw / lpips_nontarget_raw:     LPIPS grezzo nelle due regioni
-  - lpips_target_norm / lpips_nontarget_norm:   normalizzato per area (comparabile)
-  - lpips_selectivity:   lpips_target_norm / lpips_nontarget_norm  (> 1 = selettivo)
-  - clip_delta_target / clip_delta_nontarget:   ΔCLIP nelle due regioni
-  - clip_selectivity:    δtarget / (δtarget + |δnontarget|) se δtarget > 0 else 0
+Metrics per (run, scale, slider type):
+  - lpips_target_raw / lpips_nontarget_raw     LPIPS in the two regions
+  - lpips_target_norm / lpips_nontarget_norm   area-normalised LPIPS
+  - lpips_selectivity                          lpips_target_norm / lpips_nontarget_norm
+                                               (> 1 = selective)
+  - clip_delta_target / clip_delta_nontarget   ΔCLIP in the two regions
+  - clip_selectivity                           delta_t / (delta_t + |delta_n|)
+                                               if delta_t > 0, else 0
 
 Usage:
   python metrics/eval_selectivity.py --concept age --device cuda

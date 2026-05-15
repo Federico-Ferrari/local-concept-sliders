@@ -12,7 +12,7 @@
 # =============================================================================
 # eval_age_phase1.slurm  (selectivity task)
 # =============================================================================
-# FASE 1 — Genera 20 immagini base per il set di selettività "age".
+# Phase 1 — generate 20 base images for the "age" selectivity set.
 #
 # Ogni immagine contiene UNA DONNA e UN UOMO (almeno):
 #   - TARGET:     la donna  (age_woman slider deve invecchiarla)
@@ -40,7 +40,7 @@ NEG="painting, illustration, cartoon, blurry, low quality, watermark, text, sign
 mkdir -p "$OUTPUT_ROOT" sdxl/tasks/selectivity/logs
 
 echo "================================================================"
-echo "=== FASE 1: selectivity/age  (20 immagini base)             ==="
+echo "=== PHASE 1: selectivity/age  (20 base images)             ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -101,7 +101,7 @@ for i in "${!SEEDS[@]}"; do
 done
 
 echo "================================================================"
-echo "=== FASE 1 COMPLETATA: selectivity/age                      ==="
+echo "=== PHASE 1 COMPLETED: selectivity/age                      ==="
 echo "================================================================"
 ls -lh "${OUTPUT_ROOT}/eval_age_01/"
 echo "Totale run dir: $(ls -d ${OUTPUT_ROOT}/eval_age_* | wc -l)"

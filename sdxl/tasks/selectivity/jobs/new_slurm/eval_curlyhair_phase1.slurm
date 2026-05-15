@@ -12,7 +12,7 @@
 # =============================================================================
 # eval_curlyhair_phase1.slurm  (selectivity task)
 # =============================================================================
-# FASE 1 — Genera 20 immagini base per il set di selettività "curlyhair".
+# Phase 1 — generate 20 base images for the "curlyhair" selectivity set.
 #
 # Ogni immagine contiene UN UOMO e UNA DONNA (almeno):
 #   - TARGET:     l'uomo    (curlyhair_man slider deve arricciargli i capelli)
@@ -40,7 +40,7 @@ NEG="painting, illustration, cartoon, blurry, low quality, watermark, text, sign
 mkdir -p "$OUTPUT_ROOT" sdxl/tasks/selectivity/logs
 
 echo "================================================================"
-echo "=== FASE 1: selectivity/curlyhair  (20 immagini base)       ==="
+echo "=== PHASE 1: selectivity/curlyhair  (20 base images)       ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -101,7 +101,7 @@ for i in "${!SEEDS[@]}"; do
 done
 
 echo "================================================================"
-echo "=== FASE 1 COMPLETATA: selectivity/curlyhair                ==="
+echo "=== PHASE 1 COMPLETED: selectivity/curlyhair                ==="
 echo "================================================================"
 ls -lh "${OUTPUT_ROOT}/eval_curlyhair_01/"
 echo "Totale run dir: $(ls -d ${OUTPUT_ROOT}/eval_curlyhair_* | wc -l)"

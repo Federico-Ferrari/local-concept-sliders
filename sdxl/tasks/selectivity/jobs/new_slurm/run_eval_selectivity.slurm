@@ -12,9 +12,9 @@
 # =============================================================================
 # run_eval_selectivity.slurm
 # =============================================================================
-# Calcola le metriche di selettività per tutti e 4 i concept SDXL.
+# Compute selectivity metrics for all 4 SDXL concepts.
 #
-# Uso:
+# Usage:
 #   sbatch sdxl/tasks/selectivity/jobs/new_slurm/run_eval_selectivity.slurm
 #
 # Per un solo concept:
@@ -70,7 +70,7 @@ else
 fi
 
 echo "================================================================"
-echo "=== eval_selectivity COMPLETATO                             ==="
+echo "=== eval_selectivity COMPLETED                             ==="
 echo "=== Output: ${OUTPUT_DIR}/{concept}/eval_aggregate.json    ==="
 echo "================================================================"
 

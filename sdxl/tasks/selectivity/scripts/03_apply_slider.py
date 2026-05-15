@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """
-03_apply_slider.py — applica un LoRA slider GLOBALMENTE (senza maschera spaziale).
+Apply a LoRA slider GLOBALLY (no spatial mask) to the base image of a
+selectivity run.
 
-Usato nel task selectivity per testare se uno slider subject-specific modifica
-selettivamente il soggetto target senza toccare il soggetto non-target.
-Le metriche regionali (target vs non-target) sono calcolate separatamente da
-eval_selectivity.py, che legge mask_target.png e mask_nontarget.png.
+Used by the Subject-Anchored Training evaluation of §4.1: each scene
+contains a target subject (e.g. the woman) and a non-target subject
+(e.g. the man); the slider is applied globally, and the region-aware
+metrics in `metrics/eval_selectivity.py` later quantify how much of the
+edit lands on the target vs the non-target using the SAM masks
+``mask_target.png`` / ``mask_nontarget.png``.
 
 Usage:
   python sdxl/tasks/selectivity/scripts/03_apply_slider.py \
-      --run_dir  sdxl/tasks/selectivity/runs/eval_age_01 \
-      --slider_path sdxl/trained_sliders/sliders/age_woman_sdxl_v1_alpha1.0_rank4_noxattn/age_woman_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors \
+      --run_dir       sdxl/tasks/selectivity/runs/eval_age_01 \
+      --slider_path   sdxl/trained_sliders/sliders/<your_slider>.safetensors \
       --slider_scales 0.5 1.0 1.5 \
       --output_prefix edited_age_specific \
       --device cuda
@@ -97,7 +100,7 @@ def run_denoising(pipe, network, latents, timesteps, prompt_embeds,
                   add_text_embeds, add_time_ids, guidance_scale: float,
                   slider_scale: float, start_noise: int,
                   extra_step_kwargs: Dict) -> torch.Tensor:
-    """Denoising loop senza maschera spaziale: LoRA applicato globalmente."""
+    """Denoising loop without any spatial mask: LoRA is applied globally."""
     with torch.no_grad():
         for t in timesteps:
             if int(t.item()) > start_noise:
@@ -197,7 +200,7 @@ def main() -> None:
         timesteps = pipe.scheduler.timesteps
 
         print(f"\n  [scale={scale}]  {args.run_dir.name}")
-        # Ricrea i latent iniziali dallo stesso seed (same as 03_masked_edit.py)
+        # Rebuild the initial latents from the same seed (same as 03_masked_edit.py).
         generator = torch.Generator(device=device_obj).manual_seed(int(metadata["seed"]))
         latents = pipe.prepare_latents(
             batch_size=1,

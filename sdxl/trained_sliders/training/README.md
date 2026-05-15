@@ -1,220 +1,161 @@
-# training_local_concept_sliders
+# `sdxl/trained_sliders/training/`
 
-Self-contained training folder for **spatial Concept Sliders** — LoRA sliders
-anchored to a specific subject (e.g. `"man"`) rather than a generic one
-(e.g. `"person"`), so that at inference time the slider's effect localizes
-naturally to that subject, without any change to the loss, architecture or
-inference procedure.
+Training framework for SDXL Concept Sliders. The sliders trained here are
+the inputs to every SDXL evaluation in the paper:
 
-This folder is completely self-contained: it owns its own copy of the training
-script and utility modules, its own configs, prompt files, SLURM jobs, logs
-and outputs. Nothing outside this folder is modified.
+- The subject-anchored sliders trained with the prompt recipe of §4.1
+  (e.g. `age_woman_sdxl_v1`, `smile_woman_sdxl_v1`, `curlyhair_man_sdxl_v1`,
+  `furlength_dog_sdxl_v1`) and their un-anchored counterparts
+  (`age_person`, `smile_person`, `curlyhair_person`, `furlength_pet`).
+- Two style/scene sliders used by the mask-guided experiments of §4.2
+  (`daynight_sdxl_v1`, `painterly_sdxl_v1`).
 
-## Methodology
+## Origin
 
-The training pipeline is **byte-identical** to Gandikota et al. (ECCV 2024) —
-`trainscripts/textsliders/train_lora_xl.py` in this repo, which itself is the
-authors' official SDXL training script. The only code modification is a
-`sys.path` insertion at the top of `scripts/train.py` so that the script can
-be run from any working directory.
+The training script is adapted from the upstream Concept Sliders
+codebase ([rohitgandikota/sliders](https://github.com/rohitgandikota/sliders),
+MIT licensed). The only structural changes are:
 
-Our contribution is **entirely in the prompt YAMLs**. The standard
-"smile" slider uses `target: "person"`; we anchor the same concept direction
-to a specific subject by using `target: "man"` (or `"woman"`, etc.). The
-subject choice propagates through the LoRA conditioning and yields a slider
-whose effect is naturally spatially localized to that subject.
+- the LoRA stack lives in [`sdxl/core/`](../../core/) (so it can be
+  shared by the editing tasks downstream);
+- a `sys.path` insertion at the top of each training script;
+- `scripts/train_with_preservation.py` adds an explicit preservation
+  term on a second prompt set — an alternative way of obtaining the
+  same effect as the YAML-trick implementation of §4.1 in the paper.
+  Both routes are implemented; the runs reported in the paper use the
+  YAML-trick variant on top of the upstream `train.py`.
 
-See the top-level `CONTEXT_FOR_AI_TRAINING_SETUP.md` in this folder for the
-full theoretical motivation.
+Configurations (`configs/`) and prompt sets (`prompts/`) are
+original to this work.
 
-## Folder layout
+## Layout
 
 ```
-training_local_concept_sliders/
-├── README.md                     — this file
-├── CONTEXT_FOR_AI_TRAINING_SETUP.md — project brief / motivation
+sdxl/trained_sliders/training/
 ├── scripts/
-│   ├── train.py                  — copy of trainscripts/textsliders/train_lora_xl.py
-│   │                               (only sys.path header added)
-│   ├── generate_with_sliders.py  — copy of exp_generation/generate_with_sliders.py
-│   │                               (sys.path + .safetensors loader + default save path)
-│   ├── lora.py                   — byte-identical copy of upstream
-│   ├── prompt_util.py            — byte-identical copy of upstream
-│   ├── config_util.py            — byte-identical copy of upstream
-│   ├── model_util.py             — byte-identical copy of upstream
-│   ├── train_util.py             — byte-identical copy of upstream
-│   └── debug_util.py             — byte-identical copy of upstream
-├── configs/
-│   └── <exp_name>.yaml           — training config (paths, optimizer, iters, ...)
+│   ├── train.py                        # upstream Concept Sliders training
+│   └── train_with_preservation.py      # variant with an explicit preservation loss
+├── configs/                            # one YAML per slider (paper §5.2)
 ├── prompts/
-│   └── <exp_name>.yaml           — 4-prompt slider definition
+│   ├── new_prompt/                     # prompt sets used for the paper runs
+│   └── old_prompt/                     # earlier prompt iterations + upstream copies
 ├── jobs/
-│   ├── train_<exp_name>.slurm    — SLURM submission script for training
-│   └── generate_<exp_name>.slurm — SLURM submission script for inference
-├── logs/                         — SLURM stdout/stderr (%x_%j.out / .err)
-└── outputs/                      — trained LoRA weights (*.safetensors) +
-                                    generated test images (generations_*/)
+│   └── new_slurm/                      # SLURM templates used for the paper
+├── requirements-sdxl.lock              # pinned dependencies snapshot
+└── README.md                           # this file
 ```
 
-## The 4-prompt YAML
+The slider checkpoints produced here are saved under
+[`sdxl/trained_sliders/sliders/`](../sliders/) (`.pt` / `.safetensors`).
+The final sliders used by the paper runs are committed under `general/`
+(un-anchored) and `anchored/` (subject-anchored) via a whitelist in
+`.gitignore`; any other checkpoint produced by training is git-ignored
+and consumed by the downstream tasks locally.
 
-Each experiment is defined by a single YAML under `prompts/`. Field semantics
-(from upstream `prompt_util.py`):
+## How a slider is defined
 
-| field           | meaning                                                                 |
-|-----------------|-------------------------------------------------------------------------|
-| `target`        | subject the LoRA is conditioned on; LoRA is *active* on this prompt     |
-| `positive`      | positive pole of the concept direction                                  |
-| `unconditional` | negative pole of the concept direction (NOT the empty CFG unconditional)|
-| `neutral`       | base point used by the loss; conventionally equal to `target`           |
-| `action`        | `"enhance"` or `"erase"` — must be `"enhance"` for our experiments      |
-| `guidance_scale`| scale for the learned direction in the loss (NOT CFG guidance)          |
-| `resolution`    | training resolution (we use 512)                                        |
-| `batch_size`    | per-step batch size                                                     |
+Each slider is fully described by three files:
 
-The semantic direction learned by the LoRA is `(positive - unconditional)`,
-applied as a shift from `neutral`, and active only when conditioned on
-`target`.
+1. A **prompt YAML** under `prompts/new_prompt/<slider>.yaml`. Every YAML
+   entry has four fields used by the Concept Sliders objective:
 
-### A note on `guidance_scale` vs `guidance`
+   | field | meaning |
+   |---|---|
+   | `target` | subject the LoRA is conditioned on; the LoRA is active on this prompt. |
+   | `positive` | positive pole of the concept direction. |
+   | `unconditional` | negative pole of the concept direction (not the empty CFG unconditional). |
+   | `neutral` | base point used by the loss; conventionally equal to `target`. |
+   | `action` | `enhance` for every entry used in the paper. |
+   | `guidance_scale` | scale of the learned direction inside the loss (not CFG guidance). |
+   | `resolution` / `batch_size` | training resolution / per-step batch size. |
 
-`PromptSettings` in `prompt_util.py` expects the field `guidance_scale:`
-(with underscore). Some upstream example YAMLs use the shorter `guidance:` —
-this is silently ignored by pydantic and falls back to the default. We
-always use the correct name.
+   The semantic direction learned is `(positive - unconditional)`,
+   applied as a shift from `neutral`, and active only when conditioned
+   on `target`. With ``target = "woman"`` (subject-anchored) the slider
+   is supervised to fire only on female subjects; with ``target = "person"``
+   (un-anchored) it fires on any human. The paper §4.1 walks through the
+   prompt patterns for both variants.
 
-## Current experiments
+2. A **config YAML** under `configs/<slider>.yaml` that points to the
+   prompt YAML and sets the model id, the LoRA hyperparameters (rank,
+   alpha, training method) and the optimisation settings. The four
+   subject-anchored sliders reported in the paper all use the same
+   hyperparameters (rank 4, alpha 1.0, training method `noxattn`,
+   AdamW with lr 2e-4 constant, 1000 iterations, bfloat16) so that the
+   comparison against the un-anchored baseline isolates the prompt
+   recipe.
 
-| Experiment  | target | positive        | unconditional        | iterations | rank | alpha |
-|-------------|--------|-----------------|----------------------|------------|------|-------|
-| `smile_man` | `man`  | `man, smiling`  | `man, not smiling`   | 1000       | 4    | 1.0   |
+3. A **SLURM template** under `jobs/new_slurm/train_<slider>.slurm` that
+   activates the training environment and invokes
+   `scripts/train.py --config_file <slider>.yaml`.
 
-The `smile_man` run is our baseline: minimal single-entry YAML,
-single-subject anchor, no ethnicity/age variants. Its purpose is to validate
-the pipeline end-to-end and to produce a first slider we can compare against
-the classic `smile_person` baseline.
+The prompt-vs-config split keeps the slider definition (which is what
+§4.1 of the paper modifies) decoupled from the optimisation knobs (which
+are held constant for the reported runs).
 
-## How to run an existing experiment on the HPC
+## Usage
 
-From the repo root on the HPC (`/home/<your-username>/FERT_PROJECT/local-concept-sliders`):
+From the repository root:
 
 ```bash
-sbatch training_local_concept_sliders/SDXL_train/jobs/train_smile_man.slurm
+# Train one slider directly:
+python sdxl/trained_sliders/training/scripts/train.py \
+       --config_file sdxl/trained_sliders/training/configs/age_woman_sdxl_v1.yaml
+
+# Or via the bundled SLURM template:
+sbatch sdxl/trained_sliders/training/jobs/new_slurm/train_age_woman_sdxl_v1.slurm
 ```
 
-The SLURM script:
+The output is saved under
+`outputs/<slider>_alpha<alpha>_rank<rank>_<method>/`
+(local to the training folder), with intermediate checkpoints written
+every `save.per_steps` steps. The trained slider then needs to be moved
+to `sdxl/trained_sliders/sliders/` to be picked up by the evaluation
+pipelines.
 
-1. Activates the project venv (`~/Linux4HPC/venvs/sliders`).
-2. Sets `HF_HOME` / `HF_HUB_CACHE` to the shared offline HuggingFace cache.
-3. Sets `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` so the job never
-   attempts network access on compute nodes.
-4. Invokes `scripts/train.py` with the experiment config.
+A typical training run on a single A100-class GPU takes ~45-75 min for
+1000 iterations at 512x512.
 
-Logs appear in `training_local_concept_sliders/SDXL_train/logs/<jobname>_<jobid>.out|.err`.
+## Adding a new slider
 
-The trained LoRA is saved under
-`outputs/<name>_alpha<alpha>_rank<rank>_<training_method>/<name>_alpha<alpha>_rank<rank>_<training_method>_last.safetensors`
-(plus intermediate `*_{500,1000,...}steps.safetensors` checkpoints every
-`save.per_steps` steps). The `_alpha..._rank..._<method>` suffix is
-appended by `train.py` so that different hyperparameter runs never
-overwrite each other. For `smile_man` with rank=4 / alpha=1.0 /
-noxattn that resolves to:
+For a new slider called `<exp>`:
 
-```
-outputs/smile_man_alpha1.0_rank4_noxattn/smile_man_alpha1.0_rank4_noxattn_last.safetensors
-```
+1. Create `prompts/new_prompt/<exp>.yaml` with the four-prompt
+   definition. Several entries can be listed and the training loop
+   samples one of them uniformly at random per step (this is how the
+   subject-anchored variants of the paper combine "enhance on the
+   target subject" with "preserve on the complementary subject" via
+   degeneracy of the Concept Sliders objective).
+2. Create `configs/<exp>.yaml` by copying an existing config and editing
+   only `prompts_file`, `save.name` and `save.path`.
+3. Create `jobs/new_slurm/train_<exp>.slurm` by copying an existing
+   SLURM template and editing the `--job-name` and the `--config_file`.
 
-## How to try an existing slider (inference)
+No code changes are required for a new slider.
 
-After the training job finishes, the slider can be swept over a range
-of scales on a fixed seed — this is the central qualitative test of
-whether the slider works:
+## Two preservation routes
 
-```bash
-sbatch training_local_concept_sliders/SDXL_train/jobs/generate_smile_man.slurm
-```
+The paper §4.1 describes a counter-anchor pattern with
+``target == positive == unconditional``: when those fields are equal,
+the Concept Sliders objective degenerates into
+``MSE(LoRA_on, LoRA_off)``, i.e. pure preservation. The YAML-trick
+variant exploits this by mixing enhance entries (on the target subject)
+and counter-anchor entries (on the complementary subject) inside the
+same prompt set. This is the route used for every subject-anchored
+slider reported in the paper.
 
-The inference script (`scripts/generate_with_sliders.py`) monkey-patches
-`StableDiffusionXLPipeline.__call__` to inject the LoRA only at
-timesteps `<= start_noise` (default 700 out of 1000), so the image
-layout is frozen from the base-model denoising and only the later
-steps see the slider. Output is saved under
-`outputs/<slider_name>/generations_<tag>/`:
-
-  - `scale_<s>.png` for each scale
-  - `grid.png`      — side-by-side comparison strip
-
-The `generate_smile_man.slurm` example sweeps over `scales = [-2, -1,
-0, 1, 2]` so you see the slider in both directions (amplify / reverse)
-plus the exact `scale=0` baseline. Negative scales are the "anti"
-direction of the learned concept.
-
-**Localization test.** To check that the `smile_man` slider is
-anchored to "man" and not to generic subjects, rerun the inference
-job on prompts that contain *other* subjects (a woman, a mixed scene)
-and compare: the slider should leave those other subjects unchanged.
-See the commented section at the bottom of `jobs/generate_smile_man.slurm`
-for ready-to-paste variants.
-
-## How to add a new experiment
-
-For an experiment called `<exp>`:
-
-1. Create `prompts/<exp>.yaml` with the 4-prompt definition (one or more
-   YAML list entries — the training loop picks from the list uniformly at
-   random each step, which approximates the preservation set of Eq. 8 in
-   SGD form).
-2. Create `configs/<exp>.yaml` by copying `configs/smile_man.yaml` and
-   editing only `prompts_file`, `save.name`, and `save.path` (the rest is
-   shared across all experiments to keep results comparable).
-3. Create `jobs/train_<exp>.slurm` by copying `jobs/train_smile_man.slurm`
-   and changing `--job-name`, `--config_file`, `--name` accordingly.
-4. Commit, push, `sbatch`.
-
-That's it. No code changes required for a new experiment.
-
-## Hyperparameters (shared across experiments)
-
-Kept identical to upstream `trainscripts/textsliders/data/config-xl.yaml`:
-
-- Base model: `stabilityai/stable-diffusion-xl-base-1.0`
-- LoRA: type `c3lier`, rank `4`, alpha `1.0`, training method `noxattn`
-- Optimizer: `AdamW`, lr `2e-4`, constant schedule
-- Iterations: `1000`
-- Noise scheduler: `ddim`, `max_denoising_steps=50`
-- Precision: `bfloat16`
-- `use_xformers: true`
-
-These are deliberately **not** exposed per-experiment: any hyperparameter
-change would invalidate the comparison with the upstream baseline, which is
-what we're measuring localization against.
-
-## Compute budget
-
-Indicative on Bocconi HPC `stud` partition, 1 GPU, SDXL, rank 4, 1000 iters,
-resolution 512:
-
-- Wall time: ~45–75 minutes
-- GPU memory: ~18–22 GB
-- The SLURM script requests 1h30 wall time, 24 GB RAM, 4 CPUs, 1 GPU.
-
-## Known upstream behaviors (unchanged)
-
-Kept as-is per project rule "same training pipeline as upstream":
-
-- `lora.py` uses a hardcoded `DEFAULT_TARGET_REPLACE = ["Attention"]`, so the
-  `modules` list computed for the `c3lier` branch of `config_util` is never
-  actually passed through. Conv layers are therefore NOT LoRA-adapted.
-- `train_util.predict_noise_xl` computes `rescale_noise_cfg(...)` but
-  returns the un-rescaled `guided_target`; the rescale is dead code.
-
-Both behaviors are present in the upstream training script. We do not modify
-them.
+`scripts/train_with_preservation.py` is an alternative that decouples
+the two terms: it loads two prompt sets (the man-anchored enhance
+set and a woman-anchored preservation set) and combines them with a
+configurable `--lambda_pres` coefficient. Both routes are kept in the
+repository; only the YAML-trick was used for the paper because it
+needs no `train.py` modification.
 
 ## Reproducibility
 
-Each experiment is fully defined by its `prompts/*.yaml`, `configs/*.yaml`,
-`jobs/*.slurm` triple plus the exact repo commit. The training script and
-utility modules are self-contained copies under `scripts/`, so a future
-repo-wide refactor of `trainscripts/textsliders/` cannot silently change the
-training behavior of our experiments.
+Each slider is fully defined by the triple
+``prompts/new_prompt/<exp>.yaml`` + ``configs/<exp>.yaml`` +
+``jobs/new_slurm/train_<exp>.slurm`` plus the repo commit. The
+`scripts/` directory is a self-contained copy of the upstream
+Concept Sliders training files, so future refactors of `sdxl/core/`
+will not silently change the behaviour of past runs.

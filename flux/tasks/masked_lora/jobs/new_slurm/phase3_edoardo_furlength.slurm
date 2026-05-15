@@ -1,6 +1,5 @@
 #!/bin/bash
 #SBATCH --job-name=p3_edo_furlength
-#SBATCH --account=3352759
 #SBATCH --partition=gpunew
 #SBATCH --qos=normal
 #SBATCH --gpus=1
@@ -13,7 +12,7 @@
 # =============================================================================
 # phase3_edoardo_furlength.slurm
 # =============================================================================
-# Phase 3 masked LoRA — furlength × 20 run — Edoardo (basato su rebe).
+# Phase 3 masked LoRA — furlength × 20 run (based on the previous variant).
 # Prerequisiti in RUNS_ROOT:
 #   eval_furlength_{01..20}/base.png + mask_target.png + metadata.json
 #
@@ -43,7 +42,7 @@ T_ROOT="$FERT_REPO/flux/trained_sliders/sliders/trial_v1"
 mkdir -p flux/tasks/masked_lora/logs "$CACHE_DIR"
 
 echo "================================================================"
-echo "=== PHASE 3 — furlength × 20 run — Edoardo                ==="
+echo "=== PHASE 3 — furlength × 20 run                ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -86,6 +85,6 @@ run_concept "furlength" \
     "furlength_t" "1 2 3"
 
 echo "================================================================"
-echo "=== PHASE 3 furlength COMPLETATA                          ==="
+echo "=== PHASE 3 furlength COMPLETED                          ==="
 echo "  furlength_t (trial_v1) : s1, s2, s3"
 echo "================================================================"

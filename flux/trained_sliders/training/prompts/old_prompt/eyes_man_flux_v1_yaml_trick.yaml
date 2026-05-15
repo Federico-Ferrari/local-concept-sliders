@@ -4,7 +4,7 @@
 # preservation YAML-trick. Analogo a v3 smile / v1 age.
 #
 # SCOPO DIAGNOSTICO (attribute-difficulty spectrum):
-#   Eyes e' il caso piu' estremo di attributo LOCALIZZATO:
+#   Eyes is the most extreme example of a LOCALIZED attribute:
 #     - feature spazialmente piccola (pochi pixel per occhio)
 #     - semantica stabile e non diffusa (a differenza di "smile" che e'
 #       un'espressione globale del volto, o "age" che modifica rughe,

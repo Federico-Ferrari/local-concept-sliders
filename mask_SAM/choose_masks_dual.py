@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-choose_masks_dual.py — carica SAM una volta, poi per ogni run dir fa:
-  1. due click sul TARGET   → due opzioni maschera → scelta → mask_target.png
-  2. due click NON-TARGET   → due opzioni maschera → scelta → mask_nontarget.png
+choose_masks_dual.py — load SAM once, then for each run dir do:
+  1. two clicks on the TARGET     -> two mask options -> choice -> mask_target.png
+  2. two clicks on the NON-TARGET -> two mask options -> choice -> mask_nontarget.png
 
-Usato per il task selectivity, dove ogni immagine ha due soggetti:
-  - target:     il soggetto che lo slider DEVE modificare
-  - non-target: il soggetto che lo slider NON deve toccare
+Used by the selectivity task, where each image has two subjects:
+  - target:     the subject the slider MUST modify
+  - non-target: the subject the slider must NOT touch
 
 Uso:
   python mask_SAM/choose_masks_dual.py \
@@ -46,7 +46,7 @@ def pick_point(image_np: np.ndarray, title: str) -> tuple:
     selected = plt.ginput(1, timeout=0)
     plt.close(fig)
     if not selected:
-        raise RuntimeError("Nessun punto selezionato.")
+        raise RuntimeError("No point selected.")
     x, y = selected[0]
     return int(round(x)), int(round(y))
 
@@ -91,13 +91,13 @@ def show_comparison(
 
 
 def do_two_clicks(predictor, image_np: np.ndarray, run_id: str, label: str):
-    print(f"  {label} — click 1: clicca sul soggetto, poi chiudi la finestra")
-    pt1 = pick_point(image_np, f"{run_id} — {label} click 1  (chiudi dopo)")
+    print(f"  {label} — click 1: click on the subject, then close the window")
+    pt1 = pick_point(image_np, f"{run_id} — {label} click 1  (close when done)")
     mask1 = get_mask(predictor, pt1)
     print(f"     punto: {pt1}")
 
-    print(f"  {label} — click 2: clicca in un altro punto sul soggetto, poi chiudi")
-    pt2 = pick_point(image_np, f"{run_id} — {label} click 2  (chiudi dopo)")
+    print(f"  {label} — click 2: click on another point of the subject, then close")
+    pt2 = pick_point(image_np, f"{run_id} — {label} click 2  (close when done)")
     mask2 = get_mask(predictor, pt2)
     print(f"     punto: {pt2}")
 
@@ -110,10 +110,10 @@ def select_mask(predictor, image_np: np.ndarray, run_dir: Path,
     mask1, mask2 = do_two_clicks(predictor, image_np, run_id, label)
 
     while True:
-        print(f"  Apro le due opzioni maschera {label} in Preview...")
+        print(f"  Opening the two {label} mask options in Preview...")
         show_comparison(image_np, mask1, mask2, run_dir, prefix)
 
-        choice = input(f"  {label} — scegli [1 / 2 / r=ripeti i click]: ").strip().lower()
+        choice = input(f"  {label} — choose [1 / 2 / r=repeat clicks]: ").strip().lower()
         if choice == "1":
             chosen = mask1
             break
@@ -123,7 +123,7 @@ def select_mask(predictor, image_np: np.ndarray, run_dir: Path,
         elif choice == "r":
             mask1, mask2 = do_two_clicks(predictor, image_np, run_id, label)
         else:
-            print("  Digita 1, 2, oppure r.")
+            print("  Type 1, 2 or r.")
 
     for tmp in (run_dir / f"_{prefix}_v1_preview.png",
                 run_dir / f"_{prefix}_v2_preview.png"):
@@ -135,9 +135,9 @@ def select_mask(predictor, image_np: np.ndarray, run_dir: Path,
 def main() -> None:
     args = build_parser().parse_args()
 
-    print(f"Carico SAM da {args.sam_checkpoint} ...")
+    print(f"Loading SAM from {args.sam_checkpoint} ...")
     predictor = load_sam(args.sam_checkpoint, args.sam_model_type)
-    print("SAM caricato.\n")
+    print("SAM loaded.\n")
 
     total = len(args.run_ids)
     for idx, run_id in enumerate(args.run_ids, 1):
@@ -147,14 +147,14 @@ def main() -> None:
         print(f"\n[{idx}/{total}] === {run_id} ===")
 
         if not image_path.exists():
-            print(f"  [SKIP] base.png non trovato in {run_dir}")
+            print(f"  [SKIP] base.png not found in {run_dir}")
             continue
 
         image_np = np.array(Image.open(image_path).convert("RGB"))
         predictor.set_image(image_np)
 
         # --- TARGET mask -------------------------------------------------
-        print("\n  >>> MASCHERA TARGET (soggetto che lo slider DEVE modificare) <<<")
+        print("\n  >>> TARGET MASK (subject the slider MUST modify) <<<")
         mask_target = select_mask(
             predictor, image_np, run_dir, run_id,
             label="TARGET", prefix="target",
@@ -164,7 +164,7 @@ def main() -> None:
         print(f"  [OK] mask_target  → {out_target}")
 
         # --- NON-TARGET mask ---------------------------------------------
-        print("\n  >>> MASCHERA NON-TARGET (soggetto che lo slider NON deve toccare) <<<")
+        print("\n  >>> NON-TARGET MASK (subject the slider must NOT touch) <<<")
         mask_nontarget = select_mask(
             predictor, image_np, run_dir, run_id,
             label="NON-TARGET", prefix="nontarget",
@@ -173,7 +173,7 @@ def main() -> None:
         Image.fromarray(mask_nontarget.astype(np.uint8) * 255).save(out_nontarget)
         print(f"  [OK] mask_nontarget → {out_nontarget}")
 
-    print("\n=== FATTO: tutte le maschere salvate ===")
+    print("\n=== DONE: all masks saved ===")
 
 
 if __name__ == "__main__":

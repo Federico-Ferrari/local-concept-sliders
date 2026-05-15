@@ -12,11 +12,11 @@
 # =============================================================================
 # eval_furlength_phase3.slurm  (selectivity task)
 # =============================================================================
-# FASE 3 — Applica GLOBALMENTE (senza maschera spaziale) due slider furlength:
+# Phase 3 — apply two furlength sliders GLOBALLY (no spatial mask):
 #   - SPECIFICO: furlength_dog → deve modificare solo il cane
-#   - GENERALE:  furlength_pet → baseline, modifica tutti gli animali
+#   - GENERAL:  furlength_pet → baseline, modifies every subject
 #
-# La selettività si misura dopo con eval_selectivity.py usando
+# Selectivity is computed afterwards by eval_selectivity.py using
 # mask_target.png (cane) e mask_nontarget.png (gatto) create in fase 2.
 #
 # ⚠️  IMPOSTA I PATH DEI TUOI SLIDER QUI:
@@ -37,13 +37,13 @@ SLIDERS_ROOT="sdxl/trained_sliders/sliders"
 # ⚠️  IMPOSTA IL PATH DEL TUO SLIDER SPECIFICO QUI (furlength_dog):
 SLIDER_SPECIFIC="${SLIDERS_ROOT}/furlength_dog_sdxl_v1_alpha1.0_rank4_noxattn/furlength_dog_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
-# Slider generale (furlength_pet — già usato in masked_lora):
+# General slider (furlength_pet — also used in masked_lora):
 SLIDER_GENERAL="${SLIDERS_ROOT}/furlength_pet_sdxl_v1_alpha1.0_rank4_noxattn/furlength_pet_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
 RUNS_ROOT="sdxl/tasks/selectivity/runs"
 
 echo "================================================================"
-echo "=== FASE 3: selectivity/furlength  (20 runs × 2 slider × 3 scale) ==="
+echo "=== PHASE 3: selectivity/furlength  (20 runs x 2 sliders x 3 scales) ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -92,11 +92,11 @@ for i in $(seq 1 20); do
 done
 
 echo "================================================================"
-echo "=== FASE 3 COMPLETATA: selectivity/furlength                ==="
+echo "=== PHASE 3 COMPLETED: selectivity/furlength                ==="
 echo "================================================================"
 echo "Per ogni run trovi:"
 echo "  edited_furlength_specific_s1.0.png / s2.0.png / s3.0.png"
 echo "  edited_furlength_general_s1.0.png  / s2.0.png / s3.0.png"
 echo ""
-echo "Esegui poi (dopo fase 2 maschere):"
+echo "Then run (after phase 2 masks):"
 echo "  python metrics/eval_selectivity.py --concept furlength --device cuda"

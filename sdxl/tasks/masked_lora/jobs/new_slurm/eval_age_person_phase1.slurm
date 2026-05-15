@@ -14,13 +14,13 @@
 # =============================================================================
 # FASE 1 — Genera 20 immagini base per il set di valutazione age_person.
 #
-# Slider usato in fase 3: age_woman_sdxl_v1 (gender-specific, applicato solo
+# Slider used in phase 3: age_woman_sdxl_v1 (gender-specific, applied only
 # su immagini con almeno una donna).  Tutti i prompt contengono almeno una donna.
 #
 # Nota: curlyhair e smile_person usano gli STESSI prompt e semi → le immagini
-# base sono pixel-identiche; i run dir sono separati per chiarezza.
+# base images are pixel-identical; run dirs are split for clarity.
 #
-# Prerequisiti:
+# Requirements:
 #   - SDXL base model in cache HF
 #   - mkdir -p sdxl/tasks/masked_lora/runs  sdxl/tasks/masked_lora/logs
 #
@@ -49,7 +49,7 @@ echo "================================================================"
 nvidia-smi
 echo ""
 
-# 20 (seed, prompt) — donne in tutti i prompt per lo slider age_woman
+# 20 (seed, prompt) pairs — every prompt features women, matching the age_woman slider
 declare -a SEEDS=(
     1001 1002 1003 1004 1005
     1006 1007 1008 1009 1010
@@ -106,7 +106,7 @@ for i in "${!SEEDS[@]}"; do
 done
 
 echo "================================================================"
-echo "=== FASE 1 COMPLETATA: eval_age_person                      ==="
+echo "=== FASE 1 COMPLETED: eval_age_person                      ==="
 echo "================================================================"
 ls -lh "${OUTPUT_ROOT}/eval_age_person_01/"
 echo "Totale run dir: $(ls -d ${OUTPUT_ROOT}/eval_age_person_* | wc -l)"

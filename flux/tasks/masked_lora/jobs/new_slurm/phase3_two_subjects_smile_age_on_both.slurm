@@ -14,11 +14,11 @@
 # phase3_two_subjects_smile_age_on_both.slurm
 # =============================================================================
 # Replica dell'esperimento shop_concept "two_subjects_smile_age_on_both"
-# ma con maschere SAM esterne (masked_lora) invece di mask attention-based.
+# but with external SAM masks (masked_lora) instead of attention-derived masks.
 #
 # Setup identico a quello shop_concept:
 #   * 2 soggetti (man, woman) con 2 slider distinti per ognuno
-#   * smile e age caricati 2 volte come adapter PEFT distinti (4 totali)
+#   * smile and age each loaded twice as distinct PEFT adapters (4 total)
 #   * 4 run con scale (smile_man, age_man, smile_woman, age_woman):
 #       0,0,0,0           (baseline)
 #       0.5,0.5,-0.5,-0.5
@@ -49,10 +49,10 @@
 #          --sam_checkpoint mask_SAM/checkpoints/sam_vit_h_4b8939.pth
 #      done
 #    → click sul viso dell'uomo, poi sul viso della donna
-#    → push delle maschere su HPC (git add + commit + push)
+#    -> push masks to HPC (git add + commit + push)
 #
 # 3. PHASE 3 (HPC): questo SLURM
-#    Aggiorna RUN_ID sotto col valore di phase1, poi:
+#    Update RUN_ID below with the phase1 value, then:
 #      sbatch flux/tasks/masked_lora/jobs/new_slurm/phase3_two_subjects_smile_age_on_both.slurm
 #    → 3 PNG dentro la run dir
 #
@@ -84,17 +84,17 @@ mkdir -p flux/tasks/masked_lora/logs flux/tasks/masked_lora/_peft_cache
 # ⚠️  AGGIORNA RUN_ID con il timestamp generato da phase1_two_subjects.slurm.
 #     Dopo aver lanciato phase1, controlla:
 #       ls flux/tasks/masked_lora/outputs/ | grep two_subjects_masked
-#     e copia qui sotto il nome esatto della cartella.
+#     and paste the exact folder name below.
 RUN_ID="two_subjects_masked_20260424_1910"
 RUN_DIR="flux/tasks/masked_lora/outputs/${RUN_ID}"
 
 SLIDER_SMILE="flux/trained_sliders/sliders/smile.pt"
 SLIDER_AGE="flux/trained_sliders/sliders/age.pt"
 
-# 2 maschere SAM disgiunte
+# 2 disjoint SAM masks
 MASK_NAMES=(mask_man.png mask_woman.png)
 
-# 4 adapter PEFT (smile e age caricati 2 volte, una per regione)
+# 4 PEFT adapters (smile and age each loaded twice, one per region)
 SLIDER_PATHS=("$SLIDER_SMILE" "$SLIDER_AGE" "$SLIDER_SMILE" "$SLIDER_AGE")
 SLIDER_TO_MASK=(0 0 1 1)
 

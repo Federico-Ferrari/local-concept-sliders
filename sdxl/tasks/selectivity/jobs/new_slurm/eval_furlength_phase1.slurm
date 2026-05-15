@@ -12,7 +12,7 @@
 # =============================================================================
 # eval_furlength_phase1.slurm  (selectivity task)
 # =============================================================================
-# FASE 1 — Genera 20 immagini base per il set di selettività "furlength".
+# Phase 1 — generate 20 base images for the "furlength" selectivity set.
 #
 # Ogni immagine contiene UN CANE e UN GATTO (almeno):
 #   - TARGET:     il cane  (furlength_dog slider deve allungare il suo pelo)
@@ -40,7 +40,7 @@ NEG="painting, illustration, cartoon, blurry, low quality, watermark, text, sign
 mkdir -p "$OUTPUT_ROOT" sdxl/tasks/selectivity/logs
 
 echo "================================================================"
-echo "=== FASE 1: selectivity/furlength  (20 immagini base)       ==="
+echo "=== PHASE 1: selectivity/furlength  (20 base images)       ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -101,7 +101,7 @@ for i in "${!SEEDS[@]}"; do
 done
 
 echo "================================================================"
-echo "=== FASE 1 COMPLETATA: selectivity/furlength                ==="
+echo "=== PHASE 1 COMPLETED: selectivity/furlength                ==="
 echo "================================================================"
 ls -lh "${OUTPUT_ROOT}/eval_furlength_01/"
 echo "Totale run dir: $(ls -d ${OUTPUT_ROOT}/eval_furlength_* | wc -l)"

@@ -12,7 +12,7 @@
 # =============================================================================
 # run_eval_selectivity_all.slurm
 # =============================================================================
-# Rilancia eval_selectivity.py per tutti e 4 i concept SDXL.
+# Re-run eval_selectivity.py over all 4 SDXL concepts.
 # Motivazione: convenzione di lpips_selectivity invertita a target/nontarget
 # (paper convention, higher = better — coerente con generate_paper_tables.py
 # e col poster).

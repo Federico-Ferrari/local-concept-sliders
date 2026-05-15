@@ -4,19 +4,19 @@
 # attributo "eta'" (old vs young) al posto di "smile".
 #
 # SCOPO DIAGNOSTICO:
-#   Verificare se il leakage osservato su smile v3/v4 (sorriso che
+#   Check whether the leakage observed on smile v3/v4 (smile spreading
 #   finisce anche sulla donna in immagini composite) e' attribute-
 #   specific (smile ha qualcosa di speciale) o STRUCTURAL (qualsiasi
 #   concept slider asymmetric su Flux subisce leakage).
 #
-#   Baseline di stamattina ha mostrato che Flux NON fa binding
+#   This morning's baseline showed that Flux does NOT do attribute
 #   adjective->noun: in "a smiling man and a woman" sorridono entrambi.
 #   Ipotesi A (attribute-specific): l'adjective "smiling" e' troppo
-#     semanticamente diffuso -> age, piu' concreto e localizzato su
+#     semantically diffuse -> age, more concrete and localized on
 #     tratti facciali stabili (rughe, capelli), potrebbe binding-arsi
 #     meglio ai token di genere.
 #   Ipotesi B (structural): Flux non fa binding per NESSUN adjective
-#     -> age leakka uguale -> problema architetturale.
+#     -> age leaks the same way -> architectural issue.
 #
 # STRUTTURA identica a v3 smile:
 #   - 5 enhance-man entries: direzione age+ (positive=very old,
@@ -74,7 +74,7 @@
 
 # === 5 preservation-woman entries: YAML trick ===
 # target == positive == unconditional == neutral -> Eq.7 degenera a
-# preservation pura: la LoRA deve produrre stessa velocity del baseline
+# pure preservation: the LoRA must produce the same velocity as the baseline
 # Flux su qualsiasi prompt "a woman (context)", ovvero NON toccare
 # la donna. Zero segnale di direzione, solo regolarizzazione.
 

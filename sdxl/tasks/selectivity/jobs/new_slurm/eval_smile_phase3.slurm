@@ -12,11 +12,11 @@
 # =============================================================================
 # eval_smile_phase3.slurm  (selectivity task)
 # =============================================================================
-# FASE 3 — Applica GLOBALMENTE (senza maschera spaziale) due slider smile:
+# Phase 3 — apply two smile sliders GLOBALLY (no spatial mask):
 #   - SPECIFICO: smile_woman   → deve modificare solo la donna
-#   - GENERALE:  smile_person  → baseline, modifica tutti
+#   - GENERAL:  smile_person → baseline, modifies every subject
 #
-# La selettività si misura dopo con eval_selectivity.py usando
+# Selectivity is computed afterwards by eval_selectivity.py using
 # mask_target.png (donna) e mask_nontarget.png (uomo) create in fase 2.
 #
 # ⚠️  IMPOSTA I PATH DEI TUOI SLIDER QUI:
@@ -37,13 +37,13 @@ SLIDERS_ROOT="sdxl/trained_sliders/sliders"
 # ⚠️  IMPOSTA IL PATH DEL TUO SLIDER SPECIFICO QUI (smile_woman):
 SLIDER_SPECIFIC="${SLIDERS_ROOT}/smile_woman_sdxl_v1_alpha1.0_rank4_noxattn/smile_woman_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
-# Slider generale (smile_person — già usato in masked_lora):
+# General slider (smile_person — also used in masked_lora):
 SLIDER_GENERAL="${SLIDERS_ROOT}/smile_person_sdxl_v1_alpha1.0_rank4_noxattn/smile_person_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
 RUNS_ROOT="sdxl/tasks/selectivity/runs"
 
 echo "================================================================"
-echo "=== FASE 3: selectivity/smile  (20 runs × 2 slider × 3 scale) ==="
+echo "=== PHASE 3: selectivity/smile  (20 runs x 2 sliders x 3 scales) ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -92,11 +92,11 @@ for i in $(seq 1 20); do
 done
 
 echo "================================================================"
-echo "=== FASE 3 COMPLETATA: selectivity/smile                    ==="
+echo "=== PHASE 3 COMPLETED: selectivity/smile                    ==="
 echo "================================================================"
 echo "Per ogni run trovi:"
 echo "  edited_smile_specific_s0.5.png / s1.0.png / s1.5.png"
 echo "  edited_smile_general_s0.5.png  / s1.0.png / s1.5.png"
 echo ""
-echo "Esegui poi (dopo fase 2 maschere):"
+echo "Then run (after phase 2 masks):"
 echo "  python metrics/eval_selectivity.py --concept smile --device cuda"

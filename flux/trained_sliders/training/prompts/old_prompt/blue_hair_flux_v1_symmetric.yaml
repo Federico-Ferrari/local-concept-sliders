@@ -3,7 +3,7 @@
 # Blue-hair slider su Flux nel SETTING GENERALE del paper Concept Sliders
 # (Gandikota et al. 2023):
 #   - 10 entries: 5 uomini x etnie + 5 donne x etnie
-#   - TUTTE enhance (nessun YAML trick di preservation)
+#   - ALL enhance entries (no preservation YAML trick)
 #   - Simmetrico per genere
 #
 # SCELTA PROMPT:
@@ -18,7 +18,7 @@
 #   definita sul piano colore), ma scale negative producono capelli
 #   realistici tipici invece di un singolo colore forzato.
 #
-#   Comportamento atteso:
+#   Expected behaviour:
 #     - scale positive -> capelli blu (enhance)
 #     - scale zero     -> capelli default di Flux per il soggetto
 #     - scale negative -> spinta verso colori naturali generici (se l'input

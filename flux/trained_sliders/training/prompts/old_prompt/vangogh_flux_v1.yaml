@@ -8,11 +8,11 @@
 #   Gli style sliders sono noti per funzionare bene su diffusion models
 #   perche' modificano GLOBALMENTE tutta l'immagine (textures, palette,
 #   brushstrokes) senza bisogno di binding entity-specifico. Questo e'
-#   fondamentalmente diverso dagli attribute sliders che richiedono
+#   fundamentally different from attribute sliders, which require
 #   localizzazione su un soggetto.
 #
 # PREDIZIONE: vangogh_flux funziona nettamente meglio di smile/age/eyes
-#   in termini di applicazione pulita, perche' non c'e' nessun problema
+#   in terms of clean application, since there is no
 #   di binding da risolvere: lo stile si applica a tutta l'immagine in
 #   modo globale.
 #

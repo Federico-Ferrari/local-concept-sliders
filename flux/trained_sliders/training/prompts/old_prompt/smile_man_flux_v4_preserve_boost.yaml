@@ -1,38 +1,36 @@
-# smile_man_flux_v4_preserve_boost.yaml
+# Evolution of v3_yaml_trick after diagnosing the leakage observed at
+# validation time: the slider trained with 5+5 entries had learned a
+# global "smile amplifier" direction that also amplified the smile on
+# the isolated woman (switching from a normal smile to an open mouth),
+# despite the woman-loss being ~1e-3. Root cause: the preservation via
+# the degenerated Concept Sliders objective constrains the LoRA only on
+# the few (z_t, prompt) pairs seen during training. For T5-similar but
+# not identical prompts (different context, different attributes,
+# already-positive expression), the preservation does not transfer.
 #
-# Evoluzione di v3_yaml_trick dopo diagnosi del leakage osservato in
-# validazione: lo slider trainato con 5+5 entries ha appreso una direzione
-# "smile amplifier" globale che amplifica il sorriso anche sulla donna
-# isolata (cambio da sorriso normale a bocca aperta), nonostante la
-# woman-loss fosse a ~1e-3. Root cause: la preservazione via Eq.7
-# degenerata vincola la LoRA solo sui pochi (z_t, prompt) specifici che
-# il training vede. Per i prompt T5-simili ma non identici (contesto
-# diverso, attributi diversi, espressione già positiva) la preservazione
-# non si trasferisce.
+# v4 strategy: keep EVERYTHING the same as v3 except for the woman
+# entries, which are expanded from 5 to 15 to cover 5 axes of variation
+# in T5 space:
+#   1. phrasing / framing (a woman, photo of, portrait, headshot)
+#   2. age (young, middle-aged, elderly)
+#   3. ethnicity (Asian, Black)
+#   4. physical attributes (long hair, glasses)
+#   5. preserved expression (smiling, serious, laughing) <- key
+#      anti-amplification: with "a smiling woman" as preservation,
+#      the LoRA cannot push an already-smiling face into an open
+#      mouth without being penalised. Same for "laughing".
 #
-# Strategia v4: tenere TUTTO uguale a v3 tranne le woman entries,
-# espanse da 5 a 15 per coprire 5 dimensioni di variazione nello spazio
-# T5:
-#   1. phrasing/framing (a woman, photo of, portrait, headshot)
-#   2. età (young, middle-aged, elderly)
-#   3. etnia (Asian, Black)
-#   4. attributi fisici (long hair, glasses)
-#   5. espressione preservata (smiling, serious, laughing) <- chiave
-#      anti-amplificazione: con "a smiling woman" come preservation,
-#      la LoRA NON può imparare a spingere un sorriso già presente
-#      verso bocca aperta senza essere punita. Stesso per "laughing".
+# The enhance:preservation ratio goes from 50:50 in v3 to 25:75 in v4,
+# i.e. for every step on the man-branch there are ~3 preservation steps
+# on different woman prompts. The smile direction is still learned (5
+# entries x ~25 steps each over 500) but with much less freedom to
+# generalise onto female faces.
 #
-# Ratio enhance:preservation scende da 50:50 (v3) a 25:75 (v4), cioè
-# per ogni step sul man-branch ci sono ~3 step di preservazione media
-# su prompt woman diversi. La direzione smile dovrebbe restare appresa
-# (è comunque 5 entries × 25 step ciascuna su 500) ma con molta meno
-# libertà di generalizzarsi a volti femminili.
-#
-# Iperparametri resto identici a v3:
-#   - 500 max_train_steps (confronto pulito con v3)
+# All other hyperparameters identical to v3:
+#   - 500 max_train_steps (clean comparison with v3)
 #   - rank 16, xattn, alpha 1
 #   - lr 0.002, warmup 200
-#   - eta=2 per man, eta=1 per woman (irrilevante per YAML trick)
+#   - eta=2 on man, eta=1 on woman (irrelevant under the YAML trick)
 #   - save_every 100
 #
 # ============================================================
@@ -102,7 +100,7 @@
   guidance_scale: 1
   resolution: 512
 
-# --- (B) Età (3) --------------------------------------------
+# --- (B) Age (3) --------------------------------------------
 - target: "a young woman"
   positive: "a young woman"
   unconditional: "a young woman"
@@ -161,12 +159,12 @@
   guidance_scale: 1
   resolution: 512
 
-# --- (E) Espressione preservata (4) — ANTI-AMPLIFICAZIONE ---
-# Queste sono le entries chiave della strategia v4: preservano
-# esplicitamente volti femminili con espressioni già positive o
-# intense, impedendo alla LoRA di spingerli oltre verso bocca
-# aperta / risata. Il bug osservato in v3 (smile normale ->
-# bocca aperta) dovrebbe essere attaccato da queste.
+# --- (E) Preserved expression (4) — ANTI-AMPLIFICATION ---
+# These are the key entries of the v4 strategy: they explicitly
+# preserve female faces with already-positive or intense expressions,
+# preventing the LoRA from pushing them further towards an open mouth
+# / laughter. The bug observed in v3 (normal smile -> open mouth)
+# should be mitigated by these entries.
 - target: "a smiling woman"
   positive: "a smiling woman"
   unconditional: "a smiling woman"

@@ -12,11 +12,11 @@
 # =============================================================================
 # eval_curlyhair_phase3.slurm  (selectivity task)
 # =============================================================================
-# FASE 3 — Applica GLOBALMENTE (senza maschera spaziale) due slider curlyhair:
+# Phase 3 — apply two curlyhair sliders GLOBALLY (no spatial mask):
 #   - SPECIFICO: curlyhair_man    → deve modificare solo l'uomo
-#   - GENERALE:  curlyhair_person → baseline, modifica tutti
+#   - GENERAL:  curlyhair_person → baseline, modifies every subject
 #
-# La selettività si misura dopo con eval_selectivity.py usando
+# Selectivity is computed afterwards by eval_selectivity.py using
 # mask_target.png (uomo) e mask_nontarget.png (donna) create in fase 2.
 #
 # ⚠️  IMPOSTA I PATH DEI TUOI SLIDER QUI:
@@ -37,13 +37,13 @@ SLIDERS_ROOT="sdxl/trained_sliders/sliders"
 # ⚠️  IMPOSTA IL PATH DEL TUO SLIDER SPECIFICO QUI (curlyhair_man):
 SLIDER_SPECIFIC="${SLIDERS_ROOT}/curlyhair_man_sdxl_v1_alpha1.0_rank4_noxattn/curlyhair_man_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
-# Slider generale (curlyhair_person — già usato in masked_lora):
+# General slider (curlyhair_person — also used in masked_lora):
 SLIDER_GENERAL="${SLIDERS_ROOT}/curlyhair_person_sdxl_v1_alpha1.0_rank4_noxattn/curlyhair_person_sdxl_v1_alpha1.0_rank4_noxattn_last.safetensors"
 
 RUNS_ROOT="sdxl/tasks/selectivity/runs"
 
 echo "================================================================"
-echo "=== FASE 3: selectivity/curlyhair  (20 runs × 2 slider × 3 scale) ==="
+echo "=== PHASE 3: selectivity/curlyhair  (20 runs x 2 sliders x 3 scales) ==="
 echo "================================================================"
 nvidia-smi
 echo ""
@@ -92,11 +92,11 @@ for i in $(seq 1 20); do
 done
 
 echo "================================================================"
-echo "=== FASE 3 COMPLETATA: selectivity/curlyhair                ==="
+echo "=== PHASE 3 COMPLETED: selectivity/curlyhair                ==="
 echo "================================================================"
 echo "Per ogni run trovi:"
 echo "  edited_curlyhair_specific_s1.0.png / s2.0.png / s3.0.png"
 echo "  edited_curlyhair_general_s1.0.png  / s2.0.png / s3.0.png"
 echo ""
-echo "Esegui poi (dopo fase 2 maschere):"
+echo "Then run (after phase 2 masks):"
 echo "  python metrics/eval_selectivity.py --concept curlyhair --device cuda"

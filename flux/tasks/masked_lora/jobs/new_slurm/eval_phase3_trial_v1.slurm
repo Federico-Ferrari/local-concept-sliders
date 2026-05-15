@@ -13,10 +13,10 @@
 # eval_phase3_trial_v1.slurm
 # =============================================================================
 # Phase 3 masked LoRA — 5 concept × 20 run con i pesi trial_v1.
-# Prerequisiti: base.png + mask_target.png + metadata.json in RUNS_ROOT.
+# Requirements: base.png + mask_target.png + metadata.json in RUNS_ROOT.
 #
 # Output per ogni run: edited_{prefix}_s{0.5,1.0,1.5}.png
-# Metriche dopo: python metrics/eval_masked.py --concept <c> --runs_root RUNS_ROOT
+# Metrics afterwards: python metrics/eval_masked.py --concept <c> --runs_root RUNS_ROOT
 # =============================================================================
 
 set -euo pipefail
@@ -84,8 +84,8 @@ run_concept "smile_person" "${S_ROOT}/smile_person_flux_v1/flux-smile_person_flu
 run_concept "daynight"     "${S_ROOT}/daynight_flux_v1/flux-daynight_flux_v1/slider_0.pt"             "daynight"   "3 4 5"
 
 echo "================================================================"
-echo "=== PHASE 3 trial_v1 COMPLETATA                             ==="
-echo "Per le metriche:"
+echo "=== PHASE 3 trial_v1 COMPLETED                             ==="
+echo "For metrics:"
 for C in age_person curlyhair furlength painterly smile_person daynight; do
     echo "  python metrics/eval_masked.py --concept $C --runs_root ${RUNS_ROOT}"
 done
